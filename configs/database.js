@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
 
-
-//TODO: CHANGE DB LINK
-
 function initDatabase(){
-    return mongoose.connect("mongodb://mongo:27017/juicy-forest")
+    const dbUri = process.env.MONGODB_URI || "mongodb://localhost:27017/juicy-forest";
+    return mongoose.connect(dbUri);
 }
 
 module.exports = initDatabase;
