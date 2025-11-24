@@ -1,33 +1,14 @@
 services:
-  mongo:
-    image: mongo:8.0
-    container_name: juicy-forest-db
-    ports:
-      - "3031:27017"
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - juicy-forest-network
-    restart: unless-stopped
-  
   server:
     build: .
-    container_name: juicy-forest-server
     ports:
-      - "3030:3030"
-    environment:
-      - PORT=${PORT:-3030}
-      - MONGO_URI=mongodb://mongo:27017/juicy-forest
-      - JWT_SECRET=${JWT_SECRET:-JWT-SECRET-TOKEN}
+      - 3030:3030
     depends_on:
       - mongo
-    networks:
-      - juicy-forest-network
-    restart: unless-stopped
-
-volumes:
-  mongodb_data:
-
-networks:
-  juicy-forest-network:
-    driver: bridge
+    restart: always
+  
+  mongo:
+    image: mongo:8.0
+    ports:
+      - 3031:27017
+    restart: always
