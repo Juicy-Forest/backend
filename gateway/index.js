@@ -4,23 +4,14 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 
-// Configuration for your microservices
+// Configuration for microservices
 const services = {
-    auth: {
-        url: process.env.AUTH_SERVICE_URL || 'http://localhost:3030',
-        routes: ['/users'] // Paths to route to the auth service
+    server: {
+        url: process.env.SERVER_SERVICE_URL || 'http://localhost:3030',
+        routes: ['/users', '/inventory'] 
     },
-    // Future services placeholders
-    // sensor: {
-    //     url: process.env.SENSOR_SERVICE_URL || 'http://localhost:3031',
-    //     routes: ['/sensors', '/data']
-    // },
-    // chatbot: {
-    //     url: process.env.CHATBOT_SERVICE_URL || 'http://localhost:3032',
-    //     routes: ['/chat', '/bot']
-    // }
 };
 
 // Apply CORS globally - adjust origin as needed for your client
@@ -41,14 +32,7 @@ Object.entries(services).forEach(([name, service]) => {
         app.use(route, createProxyMiddleware({
             target: service.url,
             changeOrigin: true,
-            pathRewrite: {
-                // You can rewrite paths here if needed. 
-                // For example if the service expects /api/v1/users but you expose /users
-                // [`^${route}`]: '' 
-            },
             onProxyReq: (proxyReq, req, res) => {
-                // You can add custom headers here, e.g. for internal auth
-                // proxyReq.setHeader('X-Gateway-Secret', process.env.GATEWAY_SECRET);
                 console.log(`[Gateway] Proxying ${req.method} ${req.originalUrl} -> ${service.url}`);
             },
             onError: (err, req, res) => {
