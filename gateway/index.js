@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3030;
 // Configuration for microservices
 const services = {
     server: {
-        url: process.env.SERVER_SERVICE_URL || 'http://localhost:3030',
+        url: process.env.SERVER_SERVICE_URL || 'http://localhost:3031',
         routes: ['/users', '/inventory'] 
     },
 };
