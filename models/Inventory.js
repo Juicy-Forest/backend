@@ -19,6 +19,16 @@ const inventorySchema = new Schema({
         // in case u want to specify the quantity is in bottles, KGs, etc.
         required: false,
         type: String,
+    },
+    isImportant: {
+        // sets an item to important or not -> important items get low quantitiy notifcations
+        required: false,
+        type: Boolean,
+    },
+    desiredQuantity: {
+        // if the quantity of an important item drops below this, a notification must be sent
+        required: false,
+        type: Number,
     }
 });
 
