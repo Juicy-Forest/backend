@@ -37,7 +37,7 @@ const { parseError } = require('../util/parser');
 gardenController.get('/', async (req, res) => {
     try {
         const gardens = await getAllGardens();
-        res.status(200).json(gardens);
+        res.status(200).json(gardens.map(g => g.toObject()));
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -78,7 +78,7 @@ gardenController.get('/', async (req, res) => {
 gardenController.get('/user', async (req, res) => {
     try {
         const gardens = await getGardensByUserId(req.user._id);
-        res.status(200).json(gardens);
+        res.status(200).json(gardens.map(g => g.toObject()));
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -129,7 +129,7 @@ gardenController.get('/:id', async (req, res) => {
         if (!garden) {
             return res.status(404).json({ message: 'Garden not found' });
         }
-        res.status(200).json(garden);
+        res.status(200).json(garden.toObject());
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -197,7 +197,7 @@ gardenController.post('/', async (req, res) => {
             locationObj = { address: location };
         }
         const garden = await createGarden(req.user._id, name, description || '', locationObj);
-        res.status(201).json(garden);
+        res.status(201).json(garden.toObject());
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -260,7 +260,7 @@ gardenController.post('/', async (req, res) => {
 gardenController.put('/:id', async (req, res) => {
     try {
         const garden = await updateGarden(req.params.id, req.body, req.user._id);
-        res.status(200).json(garden);
+        res.status(200).json(garden.toObject());
     } catch (error) {
         if (error.message.includes('not found')) {
             res.status(404).json({ message: error.message });
@@ -353,7 +353,7 @@ gardenController.delete('/:id', async (req, res) => {
 gardenController.post('/:id/join', async (req, res) => {
     try {
         const garden = await joinGarden(req.params.id, req.user._id);
-        res.status(200).json(garden);
+        res.status(200).json(garden.toObject());
     } catch (error) {
         if (error.message.includes('not found')) {
             res.status(404).json({ message: error.message });
@@ -407,7 +407,7 @@ gardenController.post('/:id/join', async (req, res) => {
 gardenController.post('/:id/leave', async (req, res) => {
     try {
         const garden = await leaveGarden(req.params.id, req.user._id);
-        res.status(200).json(garden);
+        res.status(200).json(garden.toObject());
     } catch (error) {
         if (error.message.includes('not found')) {
             res.status(404).json({ message: error.message });
@@ -469,7 +469,7 @@ gardenController.post('/join', async (req, res) => {
             return res.status(400).json({ message: 'Join code is required' });
         }
         const garden = await joinGardenByCode(joinCode, req.user._id);
-        res.status(200).json(garden);
+        res.status(200).json(garden.toObject());
     } catch (error) {
         if (error.message.includes('not found') || error.message.includes('Invalid')) {
             res.status(404).json({ message: error.message });

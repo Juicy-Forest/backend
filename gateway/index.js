@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3030;
 const services = {
     server: {
         url: process.env.SERVER_SERVICE_URL || 'http://localhost:3031',
-        routes: ['/users', '/inventory'] 
+        routes: ['/users', '/inventory', '/gardens']
     },
 };
 
@@ -47,9 +47,3 @@ app.listen(PORT, () => {
     console.log(`API Gateway running on http://localhost:${PORT}`);
     console.log('Configured services:', Object.keys(services).join(', '));
 });
-
-
-
-
-
-
