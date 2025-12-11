@@ -16,10 +16,16 @@ async function deleteTask(id) {
     return await Task.findByIdAndDelete(id);
 }
 
+async function toggleCheckBox(id) {
+    const taskToUpdate = await Task.findById(id);
+    taskToUpdate.isComplete = !taskToUpdate.isComplete;
+    return await taskToUpdate.save();
+}
+
 module.exports = {
     getTask,
     createTask,
     updateTask,
     deleteTask,
-
+    toggleCheckBox,
 }

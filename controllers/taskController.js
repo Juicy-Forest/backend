@@ -40,4 +40,13 @@ tasksController.delete('/:id', async (req, res) => {
     }
 });
 
+tasksController.put ('/:id/toggle', async(req, res) => {
+    try {
+        const updatedCheckBox = await taskService.toggleCheckBox(req.params.id);
+        res.status(200).json(updatedCheckBox);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
 module.exports = tasksController;

@@ -5,6 +5,9 @@ const taskSchema = new Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String
+    },
     isComplete: {
         type: Boolean,
         default: false
