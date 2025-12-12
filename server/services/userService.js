@@ -16,15 +16,21 @@ const validateToken = (token) => {
 }
 
 async function register(username, email, password) {
-    const existing = await User.findOne({ email })
+    const existing = await User.findOne({ email }).collation({ locale: 'en', strength: 2 })
     if (existing) {
         throw new Error('Email is taken');
     }
 
+    const existingUsername = await User.findOne({ username }).collation({ locale: 'en', strength: 2 })
+    if (existingUsername) {
+        throw new Error('Username is taken');
+    }
+
+    
     const user = await User.create({
         username,
         email,
-        password: await bcrypt.hash(password, 10),
+        hashedPassword: await bcrypt.hash(password, 10),
     })
 
     return createToken(user);
@@ -42,7 +48,7 @@ async function login(email, password) {
         throw new Error('Account is locked. Try again later.');
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.hashedPassword);
     if (!match) {
         user.failedLoginAttempts += 1;
         if (user.failedLoginAttempts >= 5) {
@@ -78,12 +84,8 @@ async function updateUser(id, data) {
         throw new Error('User not found');
     }
 
-    if (data.firstName) {
-        user.firstName = data.firstName;
-    }
-
-    if (data.lastName) {
-        user.lastName = data.lastName;
+    if (data.username) {
+        user.username = data.username;
     }
 
     if (data.email) {
@@ -95,7 +97,7 @@ async function updateUser(id, data) {
     }
 
     if (data.password) {
-        user.password = await bcrypt.hash(data.password, 10);
+        user.hashedPassword = await bcrypt.hash(data.password, 10);
     }
 
     await user.save();

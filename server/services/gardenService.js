@@ -1,7 +1,6 @@
 const Garden = require('../models/Garden');
 
 async function createGarden(ownerId, name, description, location) {
-    // Generate unique join code
     let joinCode;
     do {
         joinCode = Math.random().toString(36).substring(2, 11).toUpperCase();
@@ -19,16 +18,17 @@ async function createGarden(ownerId, name, description, location) {
 }
 
 async function getAllGardens() {
-    return await Garden.find().populate('owner', 'firstName lastName email').populate('members', 'firstName lastName email');
+    return await Garden.find().populate('owner', 'username email').populate('members', 'username email');
 }
 
 async function getGardensByUserId(userId) {
-    return await Garden.find({ members: userId }).populate('owner', 'firstName lastName email').populate('members', 'firstName lastName email');
+    return await Garden.find({ members: userId }).populate('owner', 'username email').populate('members', 'username email');
 }
 
 async function getGardenById(id) {
-    return await Garden.findById(id).populate('owner', 'firstName lastName email').populate('members', 'firstName lastName email');
+    return await Garden.findById(id).populate('owner', 'username email').populate('members', 'username email');
 }
+
 
 async function joinGarden(gardenId, userId) {
     const garden = await Garden.findById(gardenId);
@@ -38,10 +38,6 @@ async function joinGarden(gardenId, userId) {
 
     if (garden.members.includes(userId)) {
         throw new Error('Already a member of this garden');
-    }
-
-    if (garden.members.length >= garden.maxMembers) {
-        throw new Error('Garden is full');
     }
 
     garden.members.push(userId);
