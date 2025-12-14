@@ -16,15 +16,20 @@ const validateToken = (token) => {
 }
 
 async function register(username, email, password) {
-    const existing = await User.findOne({ email })
+    const existing = await User.findOne({ email }).collation({ locale: 'en', strength: 2 })
     if (existing) {
         throw new Error('Email is taken');
+    }
+
+    const existingUsername = await User.findOne({ username }).collation({ locale: 'en', strength: 2 })
+    if (existingUsername) {
+        throw new Error('Username is taken');
     }
 
     const user = await User.create({
         username,
         email,
-        password: await bcrypt.hash(password, 10),
+        hashedPassword: await bcrypt.hash(password, 10),
     })
 
     return createToken(user);
@@ -32,30 +37,15 @@ async function register(username, email, password) {
 }
 
 async function login(email, password) {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).collation({ locale: 'en', strength: 2 })
     if (!user) {
         throw new Error('Incorrect email or password');
     }
 
-    // Check if account is locked
-    if (user.lockedUntil && user.lockedUntil > Date.now()) {
-        throw new Error('Account is locked. Try again later.');
-    }
-
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.hashedPassword);
     if (!match) {
-        user.failedLoginAttempts += 1;
-        if (user.failedLoginAttempts >= 5) {
-            user.lockedUntil = Date.now() + 60 * 60 * 1000; // Lock for 1 hour
-        }
-        await user.save();
         throw new Error('Incorrect email or password');
     }
-
-    // Reset on successful login
-    user.failedLoginAttempts = 0;
-    user.lockedUntil = undefined;
-    await user.save();
 
     return createToken(user);
 }
@@ -70,44 +60,6 @@ async function getUserById(id) {
 
 async function getUserByUsername(username) {
     return await User.findOne({ username: username });
-}
-
-async function updateUser(id, data) {
-    const user = await User.findById(id);
-    if (!user) {
-        throw new Error('User not found');
-    }
-
-    if (data.firstName) {
-        user.firstName = data.firstName;
-    }
-
-    if (data.lastName) {
-        user.lastName = data.lastName;
-    }
-
-    if (data.email) {
-        const existingEmail = await User.findOne({ email: data.email });
-        if (existingEmail && existingEmail._id.toString() !== id) {
-            throw new Error('Email is taken');
-        }
-        user.email = data.email;
-    }
-
-    if (data.password) {
-        user.password = await bcrypt.hash(data.password, 10);
-    }
-
-    await user.save();
-    return user;
-}
-
-async function deleteUser(id) {
-    const user = await User.findById(id);
-    if (!user) {
-        throw new Error('User not found');
-    }
-    await User.findByIdAndDelete(id);
 }
 
 function createToken(user) {
@@ -133,7 +85,5 @@ module.exports = {
     logout,
     validateToken,
     getUserById,
-    getUserByUsername,
-    updateUser,
-    deleteUser
+    getUserByUsername
 }
