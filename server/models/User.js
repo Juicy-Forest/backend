@@ -1,4 +1,3 @@
-//TEMPLATE FOR USER
 const {Schema, Type , model} = require('mongoose');
 
 const userSchema = new Schema({
@@ -8,23 +7,16 @@ const userSchema = new Schema({
         minlength: [4, 'Username should have at least 4 characters long'],
     },
     email: {
-        type: String,
         required: true,
+        type: String,
         unique: true
     },
     hashedPassword: {
-        type: String,
         required: true,
-    },
-    failedLoginAttempts: {
-        type: Number,
-        default: 0,
-    },
-    lockedUntil: {
-        type: Date,
+        type: String,
+        minlength: [6, 'Password should have at least 6 characters long'],
     }
 });
-
 
 userSchema.index({email: 1}, {
     collation: {

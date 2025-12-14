@@ -1,5 +1,22 @@
 const { Schema, model } = require('mongoose');
 
+const PLANT_TYPES = ["Plant", "Tree", "Bush", "Flower", 
+    "Greenhouse", "Pathway", "Pond", "Fence", ''];
+
+const GridTileSchema = new Schema({
+  index: { type: Number, required: true },  
+  section: { 
+    type: Schema.Types.ObjectId,  
+    ref: "Section",
+    default: null
+  },
+  plant: {
+    default: "",
+    enum: PLANT_TYPES,
+    type: String
+  }
+}, { _id: false });
+
 const gardenSchema = new Schema({
     name: {
         required: true,
@@ -42,6 +59,7 @@ const gardenSchema = new Schema({
         type: Date,
         default: Date.now,
     },
+    grid: { type: [GridTileSchema], default: [] },
 });
 
 gardenSchema.index({ name: 1 }, {

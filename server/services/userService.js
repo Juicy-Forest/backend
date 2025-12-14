@@ -26,7 +26,6 @@ async function register(username, email, password) {
         throw new Error('Username is taken');
     }
 
-    
     const user = await User.create({
         username,
         email,
@@ -38,7 +37,7 @@ async function register(username, email, password) {
 }
 
 async function login(email, password) {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).collation({ locale: 'en', strength: 2 })
     if (!user) {
         throw new Error('Incorrect email or password');
     }
@@ -48,20 +47,10 @@ async function login(email, password) {
         throw new Error('Account is locked. Try again later.');
     }
 
-    const match = await bcrypt.compare(password, user.hashedPassword);
+    const match = await bcrypt.compare(password, user.password);
     if (!match) {
-        user.failedLoginAttempts += 1;
-        if (user.failedLoginAttempts >= 5) {
-            user.lockedUntil = Date.now() + 60 * 60 * 1000; // Lock for 1 hour
-        }
-        await user.save();
         throw new Error('Incorrect email or password');
     }
-
-    // Reset on successful login
-    user.failedLoginAttempts = 0;
-    user.lockedUntil = undefined;
-    await user.save();
 
     return createToken(user);
 }
@@ -84,8 +73,12 @@ async function updateUser(id, data) {
         throw new Error('User not found');
     }
 
-    if (data.username) {
-        user.username = data.username;
+    if (data.firstName) {
+        user.firstName = data.firstName;
+    }
+
+    if (data.lastName) {
+        user.lastName = data.lastName;
     }
 
     if (data.email) {
@@ -97,7 +90,7 @@ async function updateUser(id, data) {
     }
 
     if (data.password) {
-        user.hashedPassword = await bcrypt.hash(data.password, 10);
+        user.password = await bcrypt.hash(data.password, 10);
     }
 
     await user.save();
@@ -135,7 +128,5 @@ module.exports = {
     logout,
     validateToken,
     getUserById,
-    getUserByUsername,
-    updateUser,
-    deleteUser
+    getUserByUsername
 }

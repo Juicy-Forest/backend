@@ -1,11 +1,11 @@
 const Garden = require('../models/Garden');
 
-async function createGarden(ownerId, name, description, location) {
+async function createGarden(ownerId, name, description, location, grid) {
+    // Generate unique join code
     let joinCode;
     do {
         joinCode = Math.random().toString(36).substring(2, 11).toUpperCase();
     } while (await Garden.findOne({ joinCode }));
-
     const garden = await Garden.create({
         name,
         description,
@@ -13,6 +13,7 @@ async function createGarden(ownerId, name, description, location) {
         joinCode,
         owner: ownerId,
         members: [ownerId], // Owner is also a member
+        grid
     });
     return garden;
 }
@@ -22,7 +23,7 @@ async function getAllGardens() {
 }
 
 async function getGardensByUserId(userId) {
-    return await Garden.find({ members: userId }).populate('owner', 'username email').populate('members', 'username email');
+    return await Garden.find({ members: userId }).populate('owner', 'firstName lastName email').populate('members', 'firstName lastName email');
 }
 
 async function getGardenById(id) {
@@ -93,16 +94,21 @@ async function updateGarden(id, data, userId) {
         throw new Error('Only owner can update the garden');
     }
 
-    if (data.name) {
+    if ("name" in data) {
         garden.name = data.name;
     }
 
-    if (data.description !== undefined) {
+    if ("description" in data) {
         garden.description = data.description;
     }
 
-    if (data.maxMembers) {
+    if (data.maxMembers) { // wont be 0 so works like this
         garden.maxMembers = data.maxMembers;
+    }
+    console.log(data.grid)
+    if("grid" in data) {
+        console.log("Reaching here")
+        garden.grid = data.grid
     }
 
     await garden.save();

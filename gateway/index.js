@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3030;
 const services = {
     server: {
         url: process.env.SERVER_SERVICE_URL || 'http://localhost:3031',
-        routes: ['/users', '/inventory', '/gardens']
+        routes: ['/users', '/inventory', '/garden', '/section']
     },
 };
 
@@ -31,6 +31,7 @@ Object.entries(services).forEach(([name, service]) => {
     service.routes.forEach(route => {
         app.use(route, createProxyMiddleware({
             target: service.url,
+            xfwd: true,
             changeOrigin: true,
             onProxyReq: (proxyReq, req, res) => {
                 console.log(`[Gateway] Proxying ${req.method} ${req.originalUrl} -> ${service.url}`);

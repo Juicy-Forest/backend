@@ -80,6 +80,7 @@ gardenController.get('/user', async (req, res) => {
         const gardens = await getGardensByUserId(req.user._id);
         res.status(200).json(gardens.map(g => g.toObject()));
     } catch (error) {
+        console.log("ERROR:", error)
         res.status(500).json({ message: error.message });
     }
 });
@@ -196,9 +197,23 @@ gardenController.post('/', async (req, res) => {
         if (typeof location === 'string') {
             locationObj = { address: location };
         }
-        const garden = await createGarden(req.user._id, name, description || '', locationObj);
+        // Initialize grid as default 20x02
+        const initGrid = []
+        for (let i = 0; i < 400; i++) {
+            const tile = {index: i, section: null, plant: ''}
+            initGrid.push(tile)
+        }
+        const garden = await createGarden(
+            req.user._id, 
+            name, 
+            description || '', 
+            locationObj, 
+            initGrid
+        );
+
         res.status(201).json(garden.toObject());
     } catch (error) {
+        console.log(error)
         res.status(400).json({ message: error.message });
     }
 });
@@ -259,6 +274,7 @@ gardenController.post('/', async (req, res) => {
  */
 gardenController.put('/:id', async (req, res) => {
     try {
+        // console.log('NEW GRID:', req.body.grid)
         const garden = await updateGarden(req.params.id, req.body, req.user._id);
         res.status(200).json(garden.toObject());
     } catch (error) {
