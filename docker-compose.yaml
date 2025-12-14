@@ -61,6 +61,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./chat:/app
+      - /app/node_modules
 
 volumes:
   mongodb_data:
