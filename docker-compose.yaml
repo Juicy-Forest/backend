@@ -39,12 +39,28 @@ services:
       - CLIENT_URL=http://localhost:5173
     depends_on:
       - server
+      - chat
     networks:
       - juicy-forest-network
     restart: unless-stopped
     volumes:
       - ./gateway:/app
       - /app/node_modules
+  chat:
+    build: ./chat
+    container_name: juicy-forest-chat
+    ports:
+      - "3033:3033"
+    environment:
+      - PORT=${PORT:-3033}
+      - JWT_SECRET=${JWT_SECRET:-JWT-SECRET-TOKEN}
+    depends_on:
+      - mongo 
+    networks:
+      - juicy-forest-network
+    restart: unless-stopped
+    volumes:
+      - ./chat:/app
 
 volumes:
   mongodb_data:
