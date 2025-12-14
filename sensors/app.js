@@ -10,9 +10,7 @@ const port = new SerialPort("/dev/ttyACM0", {
   flowControl: false,
 });
 
-
-export default function getSensorData() {
-  port.pipe(parser);
+port.pipe(parser);
 
 //{"day":"Monday","temperature":21,"humidity":53}
 
@@ -23,5 +21,5 @@ parser.on("data", function (data) {
   console.log("temperature:", sensorData.temperature);
   console.log("humidity:", sensorData.humidity);
   });
-}
+
 
