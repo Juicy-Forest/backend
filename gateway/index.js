@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3030;
 const services = {
     server: {
         url: process.env.SERVER_SERVICE_URL || 'http://localhost:3031',
-        routes: ['/user', '/inventory', '/garden', '/section']
+        routes: ['/users', '/inventory', '/garden', '/section']
     },
 };
 
