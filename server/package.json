@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -15,9 +16,6 @@
     "express": "^4.18.2",
     "express-validator": "^6.14.2",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.7.3",
-    "serialport": "^12.0.0",                 
-    "@serialport/parser-readline": "^12.0.0",
-    "@serialport/bindings-cpp": "^12.0.0"
+    "mongoose": "^6.7.3"
   }
 }
