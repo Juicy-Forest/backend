@@ -7,7 +7,7 @@ const initDatabase = require("./configs/database");
 const webConstants = require('./web-constants')
 
 
-app.use(cors({credentials: true, origin: '*', allowHeaders: ['Content-Type, X-Authorization']}))
+app.use(cors({credentials: true, origin: 'http://localhost:5173', allowHeaders: ['Content-Type, X-Authorization']}))
 app.use(express.json());
 app.use(authMiddleware);
 app.use(router)

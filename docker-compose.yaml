@@ -24,6 +24,9 @@ services:
     networks:
       - juicy-forest-network
     restart: unless-stopped
+    volumes:
+      - ./server:/app
+      - /app/node_modules
 
   gateway:
     build: ./gateway
@@ -39,9 +42,13 @@ services:
     networks:
       - juicy-forest-network
     restart: unless-stopped
+    volumes:
+      - ./gateway:/app
+      - /app/node_modules
 
 volumes:
   mongodb_data:
+  
 
 networks:
   juicy-forest-network:
