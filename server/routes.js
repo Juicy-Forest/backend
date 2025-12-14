@@ -4,7 +4,7 @@ const inventoryController = require('./controllers/inventoryController');
 const gardenController = require('./controllers/gardenController');
 const sectionController = require('./controllers/sectionController')
 
-router.use('/user', authController);
+router.use('/users', authController);
 router.use('/inventory', inventoryController);
 router.use('/garden', gardenController);
 router.use('/section', sectionController)
