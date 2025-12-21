@@ -1,10 +1,10 @@
 import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
-import { broadcastMessage, formatMessage } from '../services/messageService.js';
+import { broadcastMessage, formatMessage, getMessages, saveMessage } from '../services/messageService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'JWT-SECRET-TOKEN';
 
-export function handleConnection(wss, ws, req) {
+export async function handleConnection(wss, ws, req) {
   // 1. Authentication
   const cookies = cookie.parse(req.headers.cookie || '');
   const token = cookies['auth-token'];
@@ -22,12 +22,22 @@ export function handleConnection(wss, ws, req) {
     ws.close(1008, 'Invalid token');
     return;
   }
+  
+  const messages = await getMessages();
+  console.log(messages);
+  messages.forEach((message) => {
+    const messageObj = formatMessage(message.senderUsername, message.content, message.senderId);
+    const jsonMessage = JSON.stringify(messageObj);
+
+    ws.send(jsonMessage);
+  })
 
   console.log(`User connected: ${ws.user.username}`);
 
-  ws.on('message', (message) => {
+  ws.on('message', async (message) => {
     try {
       const parsed = JSON.parse(message);
+      await saveMessage(ws.id, ws.user.username, parsed.message);
       broadcastMessage(wss, ws.user, parsed.message);
     } catch (error) {
       console.error('Failed to process message', error);

@@ -1,4 +1,5 @@
 import { WebSocket } from 'ws';
+import Message from '../models/Message.js';
 
 export function formatMessage(username, text, userId = null) {
   return {
@@ -25,4 +26,16 @@ export function broadcastMessage(wss, sender, text) {
       client.send(jsonMessage);
     }
   });
+}
+
+export async function saveMessage(senderId, senderUsername, content) {
+  return await Message.create({
+    senderId,
+    senderUsername,
+    content,
+  });
+}
+
+export async function getMessages() {
+  return await Message.find({});
 }

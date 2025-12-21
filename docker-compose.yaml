@@ -53,6 +53,7 @@ services:
       - "3033:3033"
     environment:
       - PORT=${PORT:-3033}
+      - MONGO_URI=mongodb://mongo:27017/juicy-forest
       - JWT_SECRET=${JWT_SECRET:-JWT-SECRET-TOKEN}
     depends_on:
       - mongo 
