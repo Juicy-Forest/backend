@@ -21,12 +21,11 @@ authController.post('/register',
     async (req, res) => {
         try {
             const token = await register(req.body.username, req.body.email, req.body.password);
-            res.status(201).json(token);
+            res.status(201).json({accessToken: token.accessToken, message: "user logged in."});
         } catch (error) {
             console.log(error);
             res.status(400).json({error:error.message})
         }
-        res.end();
     })
 
 //LOGIN LOGIC
@@ -34,11 +33,10 @@ authController.post('/register',
 authController.post('/login', async (req, res) => {
     try {
         const token = await login(req.body.email, req.body.password);
-        res.json(token);
+        res.status(201).json({accessToken: token.accessToken, message: "user logged in."});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
-    res.end();
 })
 
 //LOGOUT LOGIC
