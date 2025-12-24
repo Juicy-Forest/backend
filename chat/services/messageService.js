@@ -17,9 +17,9 @@ export function formatMessage(username, text, userId, messageId, channelId) {
   };
 }
 
-export function broadcastMessage(wss, sender, content, channelId) {
+export function broadcastMessage(wss, sender, content, messageId,channelId) {
   // Create the standard message object
-  const messageObj = formatMessage(sender.username, content, sender._id, channelId);
+  const messageObj = formatMessage(sender.username, content, sender._id, messageId, channelId);
   const jsonMessage = JSON.stringify(messageObj);
 
   // Broadcast to all connected clients
