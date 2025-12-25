@@ -17,7 +17,7 @@ export function formatMessage(username, text, userId, messageId, channelId) {
   };
 }
 
-export function broadcastMessage(wss, sender, content, messageId,channelId) {
+export function broadcastMessage(wss, sender, content, messageId, channelId) {
   // Create the standard message object
   const messageObj = formatMessage(sender.username, content, sender._id, messageId, channelId);
   const jsonMessage = JSON.stringify(messageObj);
@@ -30,12 +30,12 @@ export function broadcastMessage(wss, sender, content, messageId,channelId) {
   });
 }
 
-export function broadcastActivity(wss, ws){
-        wss.clients.forEach((client) => {
-          if (client !== ws && client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ type: 'activity', payload: ws.user.username }))
-          }
-        });
+export function broadcastActivity(wss, ws, channelId) {
+  wss.clients.forEach((client) => {
+    if (client !== ws && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({ type: 'activity', channelId: channelId, payload: ws.user.username }))
+    }
+  });
 }
 
 export async function saveMessage(senderId, senderUsername, content, channelId) {
@@ -48,10 +48,10 @@ export async function saveMessage(senderId, senderUsername, content, channelId) 
 }
 
 export async function getMessagesByChannelId(channelId) {
-  return await Message.find({ channelId: channelId});
+  return await Message.find({ channelId: channelId });
 }
 
-export async function getFormattedMessages(){
+export async function getFormattedMessages() {
   const messages = await getMessages();
   return messages.map(message => formatMessage(message.senderUsername, message.content, message.senderId, message._id, message.channelId));
 }
