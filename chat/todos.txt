@@ -1,0 +1,10 @@
+[ ] 1. Read about these compound indexes and indexes in mongo/mongoose
+
+[ ] 2. Saving new messages doesn't work because it is looking for a valid
+foreign key for the Channel and right now it is getting things like "general"
+from the frontend which is not really a valid id. 
+ - [x] Patch up with some test code to test if it works.
+ - [ ] Implement creation of channels.
+  - [ ] Channels have their own garden ids.
+  - [ ] Channels creation frontend.
+  - [ ] Fetching of available channels.

@@ -1,13 +1,14 @@
 import { WebSocket } from 'ws';
 import Message from '../models/Message.js';
 
-export function formatMessage(username, text, userId, messageId, channelId) {
+export function formatMessage(username, text, userId, messageId, channelId, channelName) {
   return {
     type: 'text',
     payload: {
       _id: messageId,
       content: text,
       channelId: channelId,
+      channelName: channelName,
       author: {
         _id: userId,
         username: username
@@ -19,7 +20,7 @@ export function formatMessage(username, text, userId, messageId, channelId) {
 
 export function broadcastMessage(wss, sender, message) {
   // Create the standard message object
-  const messageObj = formatMessage(sender.username, message.content, sender._id, message._id, message.channelId);
+  const messageObj = formatMessage(sender.username, message.content, sender._id, message._id, message.channel._id, message.channel.name);
   const jsonMessage = JSON.stringify(messageObj);
 
   // Broadcast to all connected clients
@@ -40,11 +41,13 @@ export function broadcastActivity(wss, ws, channelId) {
 
 export async function saveMessage(senderId, senderUsername, message) {
   return await Message.create({
-    senderId: senderId,
-    senderUsername: senderUsername,
+    author: {
+      _id: senderId,
+      username: senderUsername
+    },
     content: message.content,
-    channelId: message.channelId
-  });
+    channel: message.channelId
+  }).then(doc => doc.populate('channel'));
 }
 
 export async function getMessagesByChannelId(channelId) {
@@ -53,9 +56,9 @@ export async function getMessagesByChannelId(channelId) {
 
 export async function getFormattedMessages() {
   const messages = await getMessages();
-  return messages.map(message => formatMessage(message.senderUsername, message.content, message.senderId, message._id, message.channelId));
+  return messages.map(message => formatMessage(message.author.username, message.content, message.author._id, message._id, message.channel._id, message.channel.name));
 }
 
 export async function getMessages() {
-  return await Message.find({});
+  return await Message.find({}).populate(['author', 'channel']);
 }

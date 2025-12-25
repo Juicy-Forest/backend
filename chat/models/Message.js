@@ -2,15 +2,15 @@ import { Schema, model } from "mongoose";
 
 const messageSchema = new Schema(
   {
-    senderId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      index: true,
-    },
-    senderUsername:{
-      type: String,
-      required: true,
-      trim: true,
+    author: {
+      _id: {
+        type: Schema.Types.ObjectId,
+        required: true,
+      },
+      username: {
+        type: String,
+        required: true,
+      }
     },
     content: {
       type: String,
@@ -18,10 +18,11 @@ const messageSchema = new Schema(
       trim: true,
       maxlength: 3000,
     },
-    channelId: {
-      type: String,
+    channel: {
+      type: Schema.Types.ObjectId,
       required: true,
-      trim: true,
+      ref: 'Channel',
+      index: true
     },
   },
   {
@@ -29,9 +30,10 @@ const messageSchema = new Schema(
   }
 );
 
-messageSchema.index({ createdAt: 1 });
+messageSchema.index({ channel: 1, createdAt: -1 });
+messageSchema.index({ gardenId: 1, createdAt: -1 });
+messageSchema.index({ author: 1, createdAt: -1 });
 
 const Message = model('Message', messageSchema);
 
 export default Message;
-
