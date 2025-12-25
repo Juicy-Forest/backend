@@ -17,9 +17,9 @@ export function formatMessage(username, text, userId, messageId, channelId) {
   };
 }
 
-export function broadcastMessage(wss, sender, content, messageId, channelId) {
+export function broadcastMessage(wss, sender, message) {
   // Create the standard message object
-  const messageObj = formatMessage(sender.username, content, sender._id, messageId, channelId);
+  const messageObj = formatMessage(sender.username, message.content, sender._id, message._id, message.channelId);
   const jsonMessage = JSON.stringify(messageObj);
 
   // Broadcast to all connected clients
@@ -38,12 +38,12 @@ export function broadcastActivity(wss, ws, channelId) {
   });
 }
 
-export async function saveMessage(senderId, senderUsername, content, channelId) {
+export async function saveMessage(senderId, senderUsername, message) {
   return await Message.create({
     senderId: senderId,
     senderUsername: senderUsername,
-    content: content,
-    channelId: channelId
+    content: message.content,
+    channelId: message.channelId
   });
 }
 

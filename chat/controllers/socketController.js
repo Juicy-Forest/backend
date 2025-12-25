@@ -32,8 +32,8 @@ export async function handleConnection(wss, ws, req) {
     try {
       const result = JSON.parse(message);
       if (result.type === 'message') {
-        let savedMessage = await saveMessage(ws.id, ws.user.username, result.content, result.channelId);
-        broadcastMessage(wss, ws.user, result.content, savedMessage._id, result.channelId);
+        let savedMessage = await saveMessage(ws.id, ws.user.username, result);
+        broadcastMessage(wss, ws.user, savedMessage);
       }
       else if (result.type === 'activity') {
         broadcastActivity(wss, ws, result.channelId);
