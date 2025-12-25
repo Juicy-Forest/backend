@@ -8,10 +8,13 @@ import mongoose from 'mongoose';
 dotenv.config();
 
 const app = express();
-const server = createServer(app);
 const PORT = process.env.PORT || 3033;
+const server = app.listen(PORT, () => {
+  console.log(`Chat microservice running on http://localhost:${PORT}`);
+});
 
-const wss = new WebSocketServer({ server });
+
+const wss = new WebSocketServer({server});
 
 function initDatabase(){
     const dbUri = process.env.MONGO_URI || "mongodb://localhost:27017/juicy-forest";
@@ -22,8 +25,3 @@ initDatabase();
 
 // Delegate connection handling to the controller
 wss.on('connection', async (ws, req) => await handleConnection(wss, ws, req));
-
-server.listen(PORT, () => {
-  console.log(`Chat microservice running on http://localhost:${PORT}`);
-});
-
