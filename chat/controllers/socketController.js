@@ -24,15 +24,6 @@ export async function handleConnection(wss, ws, req) {
     return;
   }
 
-  // let channel = await Channel.findOne({ name: "general" });
-  // const gardenId = new mongoose.Types.ObjectId();
-  // if (!channel) {
-  //   channel = await Channel.create({
-  //     name: "general",
-  //     gardenId: gardenId,
-  //   });
-  // }
-
   // Sending chat history to connected client
   let messages = await getFormattedMessages();
   let channels = await getFormattedChannels();
@@ -48,12 +39,12 @@ export async function handleConnection(wss, ws, req) {
   ws.on('message', async (message) => {
     try {
       const result = JSON.parse(message);
+
       if (result.type === 'message') {
         let savedMessage = await saveMessage(ws.id, ws.user.username, result);
         broadcastMessage(wss, ws.user, savedMessage);
       }
       else if (result.type === 'activity') {
-        console.log(result.avatarColor);
         broadcastActivity(wss, ws, result.channelId, result.avatarColor);
       }
     } catch (error) {
