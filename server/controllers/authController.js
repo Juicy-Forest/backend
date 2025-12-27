@@ -10,6 +10,7 @@ const { parseError } = require('../util/parser');
 
 authController.get('/', async (req, res) => {
     const user = req.user;
+    console.log(user);
     if (user) {
         res.status(200).json(user)
     }

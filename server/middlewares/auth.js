@@ -10,6 +10,7 @@ const authMiddleware = (req, res, next) => {
                 'email': user.email,
                 'username': user.username,
                 '_id': user._id,
+                'avatarColor': user.avatarColor,
                 token
             }
         } catch (error) {

@@ -53,7 +53,8 @@ export async function handleConnection(wss, ws, req) {
         broadcastMessage(wss, ws.user, savedMessage);
       }
       else if (result.type === 'activity') {
-        broadcastActivity(wss, ws, result.channelId);
+        console.log(result.avatarColor);
+        broadcastActivity(wss, ws, result.channelId, result.avatarColor);
       }
     } catch (error) {
       console.error('Failed to process message', error);

@@ -10,7 +10,11 @@ const messageSchema = new Schema(
       username: {
         type: String,
         required: true,
-      }
+      },
+      avatarColor: {
+        type: String,
+        required: true,
+      },
     },
     content: {
       type: String,

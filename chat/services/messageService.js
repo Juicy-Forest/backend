@@ -1,17 +1,36 @@
 import { WebSocket } from 'ws';
 import Message from '../models/Message.js';
 
-export function formatMessage(username, text, userId, messageId, channelId, channelName) {
+export function formatNewMessage(username, userId, message) {
   return {
     type: 'text',
     payload: {
-      _id: messageId,
-      content: text,
-      channelId: channelId,
-      channelName: channelName,
+      _id: message._id,
+      content: message.content,
+      channelId: message.channel._id,
+      channelName: message.channel.name,
       author: {
         _id: userId,
-        username: username
+        username: username,
+        avatarColor: message.author.avatarColor,
+      },
+      timestamp: new Date().toISOString()
+    }
+  };
+}
+
+export function formatMessage(message) {
+  return {
+    type: 'text',
+    payload: {
+      _id: message._id,
+      content: message.content,
+      channelId: message.channel._id,
+      channelName: message.channel.name,
+      author: {
+        _id: message.author._id,
+        username: message.author.username,
+        avatarColor: message.author.avatarColor,
       },
       timestamp: new Date().toISOString()
     }
@@ -20,7 +39,7 @@ export function formatMessage(username, text, userId, messageId, channelId, chan
 
 export function broadcastMessage(wss, sender, message) {
   // Create the standard message object
-  const messageObj = formatMessage(sender.username, message.content, sender._id, message._id, message.channel._id, message.channel.name);
+  const messageObj = formatNewMessage(sender.username, sender._id, message);
   const jsonMessage = JSON.stringify(messageObj);
 
   // Broadcast to all connected clients
@@ -31,10 +50,10 @@ export function broadcastMessage(wss, sender, message) {
   });
 }
 
-export function broadcastActivity(wss, ws, channelId) {
+export function broadcastActivity(wss, ws, channelId, avatarColor) {
   wss.clients.forEach((client) => {
     if (client !== ws && client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ type: 'activity', channelId: channelId, payload: ws.user.username }))
+      client.send(JSON.stringify({ type: 'activity', channelId: channelId, payload: {username: ws.user.username, avatarColor: avatarColor} }))
     }
   });
 }
@@ -43,7 +62,8 @@ export async function saveMessage(senderId, senderUsername, message) {
   return await Message.create({
     author: {
       _id: senderId,
-      username: senderUsername
+      username: senderUsername,
+      avatarColor: message.avatarColor,
     },
     content: message.content,
     channel: message.channelId
@@ -56,7 +76,7 @@ export async function getMessagesByChannelId(channelId) {
 
 export async function getFormattedMessages() {
   const messages = await getMessages();
-  return messages.map(message => formatMessage(message.author.username, message.content, message.author._id, message._id, message.channel._id, message.channel.name));
+  return messages.map(message => formatMessage(message));
 }
 
 export async function getMessages() {

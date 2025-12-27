@@ -30,6 +30,7 @@ async function register(username, email, password) {
         username,
         email,
         hashedPassword: await bcrypt.hash(password, 10),
+        avatarColor: getRandomPastelColor(),
     })
 
     return createToken(user);
@@ -62,17 +63,37 @@ async function getUserByUsername(username) {
     return await User.findOne({ username: username });
 }
 
+function getRandomPastelColor() {
+  const pastelColors = [
+    '#FFB3BA', // light pink
+    '#FFDFBA', // light orange
+    '#FFFFBA', // light yellow
+    '#BAFFC9', // light green
+    '#BAE1FF', // light blue
+    '#D5BAFF', // light purple
+    '#FFC9DE', // soft pink
+    '#FFE7BA', // peach
+    '#BAFFD9', // mint
+    '#BFFFD9'  // soft turquoise
+  ];
+
+  const randomIndex = Math.floor(Math.random() * pastelColors.length);
+  return pastelColors[randomIndex];
+}
+
 function createToken(user) {
     const payload = {
         _id: user._id,
         username: user.username,
         email: user.email,
+        avatarColor: user.avatarColor,
     }
 
     return {
         _id: user._id,
         username: user.username,
         email: user.email,
+        avatarColor: user.avatarColor,
         accessToken: jwt.sign(payload, webConstants['JWT-SECRET'])
     }
 }
