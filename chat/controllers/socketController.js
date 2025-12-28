@@ -1,6 +1,6 @@
 import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
-import { broadcastActivity, broadcastEditedMessage, broadcastMessage, editMessage, getFormattedMessages, saveMessage } from '../services/messageService.js';
+import { broadcastActivity, broadcastDeletedMessage, broadcastEditedMessage, broadcastMessage, deleteMessage, editMessage, getFormattedMessages, saveMessage } from '../services/messageService.js';
 import { getFormattedChannels } from '../services/channelService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'JWT-SECRET-TOKEN';
@@ -47,6 +47,10 @@ export async function handleConnection(wss, ws, req) {
       else if (result.type === 'editMessage') {
         const editedMessage = await editMessage(result.messageId, result.newContent, ws.id);
         broadcastEditedMessage(wss, editedMessage);
+      }
+      else if (result.type === 'deleteMessage') {
+        const deletedMessage = await deleteMessage(result.messageId, ws.id);
+        broadcastDeletedMessage(wss, deletedMessage);
       }
       else if (result.type === 'activity') {
         broadcastActivity(wss, ws, result.channelId, result.avatarColor);

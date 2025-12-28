@@ -75,6 +75,21 @@ export function broadcastEditedMessage(wss, message) {
   });
 }
 
+export function broadcastDeletedMessage(wss, message) {
+  const editPayload = {
+    type: 'deleteMessage',
+    payload: {
+      _id: message._id,
+    }
+  };
+  
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(editPayload));
+    }
+  });
+}
+
 export async function saveMessage(senderId, senderUsername, message) {
   return await Message.create({
     author: {
@@ -103,6 +118,22 @@ export async function editMessage(messageId, newContent, userId){
 
   return message;
 };
+
+export async function deleteMessage(messageId, userId){
+  const message = await Message.findById(messageId); 
+
+  if(!message){
+    throw new Error('Message not found');
+  };
+
+  if(message.author._id.toString() !== userId){
+    throw new Error('Unauthorized: You can only delete your own messages');
+  };
+
+  await message.deleteOne();
+
+  return message;
+}
 
 export async function getMessagesByChannelId(channelId) {
   return await Message.find({ channelId: channelId });
