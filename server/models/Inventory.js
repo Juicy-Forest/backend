@@ -4,7 +4,6 @@ const inventorySchema = new Schema({
     name: {
         required: true,
         type: String,
-        unique: true, // don't want to add the same thing twice (like tomato seeds), just once and then update the quantity
     },
     type: {
         required: true,
@@ -29,14 +28,20 @@ const inventorySchema = new Schema({
         // if the quantity of an important item drops below this, a notification must be sent
         required: false,
         type: Number,
-    }
+    },
+    gardenId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Garden',
+        required: true,
+    },
 });
 
-inventorySchema.index({name: 1}, {
-    collation: {
-        locale: 'en',
-        strength: 2
-    }
+inventorySchema.index({ gardenId: 1, name: 1 }, { 
+    unique: true,
+    collation: { 
+        locale: 'en', 
+        strength: 2 
+    } 
 });
 
 const Inventory = model('Inventory', inventorySchema);
