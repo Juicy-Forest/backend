@@ -43,6 +43,11 @@ async function login(email, password) {
         throw new Error('Incorrect email or password');
     }
 
+    // Check if account is locked
+    if (user.lockedUntil && user.lockedUntil > Date.now()) {
+        throw new Error('Account is locked. Try again later.');
+    }
+
     const match = await bcrypt.compare(password, user.hashedPassword);
     if (!match) {
         throw new Error('Incorrect email or password');
@@ -61,6 +66,44 @@ async function getUserById(id) {
 
 async function getUserByUsername(username) {
     return await User.findOne({ username: username });
+}
+
+async function updateUser(id, data) {
+    const user = await User.findById(id);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    if (data.firstName) {
+        user.firstName = data.firstName;
+    }
+
+    if (data.lastName) {
+        user.lastName = data.lastName;
+    }
+
+    if (data.email) {
+        const existingEmail = await User.findOne({ email: data.email });
+        if (existingEmail && existingEmail._id.toString() !== id) {
+            throw new Error('Email is taken');
+        }
+        user.email = data.email;
+    }
+
+    if (data.password) {
+        user.hashedPassword = await bcrypt.hash(data.password, 10);
+    }
+
+    await user.save();
+    return user;
+}
+
+async function deleteUser(id) {
+    const user = await User.findById(id);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    await User.findByIdAndDelete(id);
 }
 
 function getRandomPastelColor() {
@@ -97,8 +140,6 @@ function createToken(user) {
         accessToken: jwt.sign(payload, webConstants['JWT-SECRET'])
     }
 }
-
-
 
 module.exports = {
     register,
