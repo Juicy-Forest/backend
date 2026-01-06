@@ -2,7 +2,7 @@ const authController = require('express').Router();
 const { body, validationResult } = require('express-validator');
 const { getByUserId } = require('../services/userService');
 
-const { register, login, logout, getUserByUsername, updateUserPassword } = require('../services/userService');
+const { register, login, logout, getUserByUsername, getUserByEmail,getUserById, updateUserPassword,updateEmail,updateUsername } = require('../services/userService');
 const { parseError } = require('../util/parser');
 
 
@@ -11,10 +11,10 @@ const { parseError } = require('../util/parser');
 authController.get('/', async (req, res) => {
     const user = req.user;
     if (user) {
-        res.status(200).json(user)
+        const freshUser = await getUserById(user._id);
+        res.status(200).json(freshUser)
     }
 })
-
 //REGISTER LOGIC
 
 authController.post('/register',
@@ -51,7 +51,7 @@ authController.get('/logout', async (req, res) => {
 authController.post('/changePassword', async (req, res) => {
     try {
         const user = req.user;
-        
+
         if (!user) {
             return res.status(401).json({ error: "Not authenticated" });
         }
@@ -74,5 +74,64 @@ authController.post('/changePassword', async (req, res) => {
         res.status(500).json({ error: error.message || "Password change failed" });
     }
 })
+
+authController.post('/changeUsername', async (req, res) => {
+    try {
+        const user = req.user;
+
+        if (!user) {
+            return res.status(401).json({ error: "Not authenticated" });
+        }
+
+        const { newUsername } = req.body;
+
+        if (!newUsername || newUsername.trim().length === 0) {
+            return res.status(400).json({ error: "New username is required" });
+        }
+
+        await updateUsername(user._id, newUsername);
+        
+        res.status(200).json({ message: "Username changed successfully!" });    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message || "Username change failed" });
+    }
+})
+
+authController.post('/changeEmail', async (req, res) => {
+    try {
+        const user = req.user;
+
+        if (!user) {
+            return res.status(401).json({ error: "Not authenticated" });
+        }
+
+        const { newEmail } = req.body;
+
+        if (!newEmail || newEmail.trim().length === 0) {
+            return res.status(400).json({ error: "New email is required" });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+            return res.status(400).json({ error: "Invalid email format" });
+        }
+
+        if (newEmail.toLowerCase() === user.email.toLowerCase()) {
+            return res.status(400).json({ error: "New email must be different from current email" });
+        }
+
+        const existingUser = await getUserByEmail(newEmail);
+        if (existingUser) {
+            return res.status(400).json({ error: "Email is already in use" });
+        }
+
+        await updateEmail(user._id, newEmail);
+        
+        res.status(200).json({ message: "Email changed successfully!", newEmail });    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message || "Email change failed" });
+    }
+})
+
 
 module.exports = authController;
