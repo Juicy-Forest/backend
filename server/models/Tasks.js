@@ -11,6 +11,10 @@ const taskSchema = new Schema({
     isComplete: {
         type: Boolean,
         default: false
+    },
+    sectionId: {
+        type: String,
+        required: true
     }
 });
 

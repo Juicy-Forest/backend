@@ -1,21 +1,29 @@
 import express from 'express';
-import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import dotenv from 'dotenv';
 import { handleConnection } from './controllers/socketController.js';
+import { initDatabase } from './utils/initDatabase.js';
+import router from './routes.js';
 
 dotenv.config();
 
 const app = express();
-const server = createServer(app);
 const PORT = process.env.PORT || 3033;
 
-const wss = new WebSocketServer({ server });
+app.get('/', (req, res) => {
+  res.json({ status: 'Chat is running' });
+});
 
-// Delegate connection handling to the controller
-wss.on('connection', (ws, req) => handleConnection(wss, ws, req));
+app.use(express.json());
+app.use(router);
+initDatabase();
 
-server.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Chat microservice running on http://localhost:${PORT}`);
 });
 
+
+const wss = new WebSocketServer({server});
+
+// Delegate connection handling to the controller
+wss.on('connection', async (ws, req) => await handleConnection(wss, ws, req));

@@ -1,4 +1,4 @@
-const {Schema, Type , model} = require('mongoose');
+const {Schema, model} = require('mongoose');
 
 const userSchema = new Schema({
     username: {
@@ -15,6 +15,10 @@ const userSchema = new Schema({
         required: true,
         type: String,
         minlength: [6, 'Password should have at least 6 characters long'],
+    },
+    avatarColor: {
+        required: true,
+        type: String,
     }
 });
 
