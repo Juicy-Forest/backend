@@ -98,7 +98,8 @@ export async function saveMessage(senderId, senderUsername, message) {
       avatarColor: message.avatarColor,
     },
     content: message.content,
-    channel: message.channelId
+    channel: message.channelId,
+    gardenId: message.gardenId
   }).then(doc => doc.populate('channel'));
 }
 
@@ -139,11 +140,11 @@ export async function getMessagesByChannelId(channelId) {
   return await Message.find({ channelId: channelId });
 }
 
-export async function getFormattedMessages() {
-  const messages = await getMessages();
+export async function getFormattedMessagesByGardenId(gardenId) {
+  const messages = await getMessagesByGardenId(gardenId);
   return messages.map(message => formatMessage(message));
 }
 
-export async function getMessages() {
-  return await Message.find({}).populate('channel');
+export async function getMessagesByGardenId(gardenId) {
+  return await Message.find({gardenId: gardenId}).sort({createdAt: 1}).populate('channel');
 }

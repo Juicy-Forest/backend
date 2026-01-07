@@ -28,6 +28,10 @@ const messageSchema = new Schema(
       ref: 'Channel',
       index: true
     },
+    gardenId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
   },
   {
     timestamps: true,

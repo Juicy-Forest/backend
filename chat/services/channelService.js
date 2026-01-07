@@ -7,12 +7,12 @@ export async function saveChannel(name, gardenId) {
   });
 }
 
-export async function getChannels() {
-  return await Channel.find({});
+export async function getChannels(gardenId) {
+  return await Channel.find({gardenId: gardenId});
 }
 
-export async function getFormattedChannels(){
-  const channels = await getChannels();
+export async function getFormattedChannelsByGardenId(gardenId){
+  const channels = await getChannels(gardenId);
   return channels.map(channel => formatChannel(channel));
 }
 
