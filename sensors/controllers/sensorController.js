@@ -1,9 +1,10 @@
-const sensorController = require('express').Router();
-const sensorService = require('../services/sensorService');
+import express from 'express'
+import { getSensorData } from '../services/sensorService.js'
+const sensorController = express.Router();
 
 sensorController.get('/', async (req, res) => {
     try {
-        const sensorData = await sensorService.getSensorData();
+        const sensorData = await getSensorData();
         res.status(200).send(sensorData);
     }
     catch (error) {
@@ -11,4 +12,4 @@ sensorController.get('/', async (req, res) => {
     }
 });
 
-module.exports = sensorController;
+export default sensorController;

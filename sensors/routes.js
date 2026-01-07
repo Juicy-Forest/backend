@@ -1,6 +1,7 @@
-const router = require('express').Router();
-const sensorController = require('./controllers/sensorController');
+import express from 'express'
+import sensorController from './controllers/sensorController.js';
+const router = express.Router();
 
 router.use('/sensors', sensorController);
 
-module.exports = router;
+export default router
