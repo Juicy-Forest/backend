@@ -1,7 +1,7 @@
 import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
-import { broadcastActivity, broadcastDeletedMessage, broadcastEditedMessage, broadcastMessage, deleteMessage, editMessage, getFormattedMessages, saveMessage } from '../services/messageService.js';
-import { getFormattedChannels } from '../services/channelService.js';
+import { broadcastActivity, broadcastDeletedMessage, broadcastEditedMessage, broadcastMessage, deleteMessage, editMessage, getFormattedMessagesByGardenId, saveMessage } from '../services/messageService.js';
+import { getFormattedChannelsByGardenId } from '../services/channelService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'JWT-SECRET-TOKEN';
 
@@ -24,16 +24,6 @@ export async function handleConnection(wss, ws, req) {
     return;
   }
 
-  // Sending chat history to connected client
-  let messages = await getFormattedMessages();
-  let channels = await getFormattedChannels();
-  const initialReqObj = {
-    type: 'initialLoad',
-    messages: messages,
-    channels: channels
-  }
-
-  ws.send(JSON.stringify(initialReqObj));
   console.log(`User connected: ${ws.user.username}`);
 
   ws.on('message', async (message) => {
@@ -43,6 +33,17 @@ export async function handleConnection(wss, ws, req) {
       if (result.type === 'message') {
         let savedMessage = await saveMessage(ws.id, ws.user.username, result);
         broadcastMessage(wss, ws.user, savedMessage);
+      }
+      else if (result.type === 'getMessages') {
+        let messages = await getFormattedMessagesByGardenId(result.gardenId);
+        let channels = await getFormattedChannelsByGardenId(result.gardenId);
+        const initialReqObj = {
+          type: 'initialLoad',
+          messages: messages,
+          channels: channels
+        }
+
+        ws.send(JSON.stringify(initialReqObj));
       }
       else if (result.type === 'editMessage') {
         const editedMessage = await editMessage(result.messageId, result.newContent, ws.id);
