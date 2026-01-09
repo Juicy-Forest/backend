@@ -1,6 +1,9 @@
 const Task = require('../models/Tasks');
 
-async function getTask() {
+async function getTask(sectionId) {
+    if (sectionId) {
+        return await Task.find({ sectionId });
+    }
     return await Task.find({});
 }
 

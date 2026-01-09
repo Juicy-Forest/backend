@@ -3,7 +3,8 @@ const taskService = require('../services/taskService');
 
 tasksController.get('/', async (req, res) => {
     try {
-        const tasks = await taskService.getTask();
+        const { sectionId } = req.query;
+        const tasks = await taskService.getTask(sectionId);
         res.status(200).json(tasks);
     } catch (error) {
         res.status(500).json({message: error.message});
