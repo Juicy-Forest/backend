@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,9 +17,5 @@
     "express-validator": "^6.14.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.3"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "supertest": "^6.3.4"
   }
 }
