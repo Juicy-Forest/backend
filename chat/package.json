@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
-    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch"
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:watch": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch",
+    "test:coverage": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
   "dependencies": {
     "cookie": "^1.1.1",
     "cors": "^2.8.5",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "http": "^0.0.1-security",

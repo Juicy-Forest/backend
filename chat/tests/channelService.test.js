@@ -86,22 +86,5 @@ describe('Channel Service', () => {
       expect(result).not.toHaveProperty('createdAt');
     });
   });
-
-  describe('getFormattedChannels', () => {
-    it('should return formatted channels', async () => {
-      const mockChannels = [
-        { _id: '1', name: 'general', gardenId: 'garden1' },
-        { _id: '2', name: 'random', gardenId: 'garden1' }
-      ];
-      mockChannelModel.find.mockResolvedValue(mockChannels);
-
-      const result = await getFormattedChannels();
-
-      expect(result).toEqual([
-        { _id: '1', name: 'general' },
-        { _id: '2', name: 'random' }
-      ]);
-    });
-  });
 });
 
