@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(express.json());
-app.use(router)
+app.use(router);
 initDatabase();
 
 const server = app.listen(PORT, () => {
