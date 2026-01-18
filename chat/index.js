@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
     res.json({ status: 'Chat is running' });
 });
 
-app.use(express.json());
+app.use(express.json())
 app.use(router);
 initDatabase();
 
