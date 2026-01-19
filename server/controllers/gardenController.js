@@ -16,7 +16,7 @@ gardenController.get('/user', async (req, res) => {
         const gardens = await getGardensByUserId(req.user._id);
         res.status(200).json(gardens.map(g => g.toObject()));
     } catch (error) {
-        console.log("ERROR:", error)
+        console.log('ERROR:', error);
         res.status(500).json({ message: error.message });
     }
 });
@@ -48,10 +48,10 @@ gardenController.post('/', async (req, res) => {
             locationObj = { address: location };
         }
         // Initialize grid as default 20x02
-        const initGrid = []
+        const initGrid = [];
         for (let i = 0; i < 400; i++) {
-            const tile = {index: i, section: null, plant: ''}
-            initGrid.push(tile)
+            const tile = { index: i, section: null, plant: '' };
+            initGrid.push(tile);
         }
         const garden = await createGarden(
             req.user._id, 
@@ -63,7 +63,7 @@ gardenController.post('/', async (req, res) => {
 
         res.status(201).json(garden.toObject());
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(400).json({ message: error.message });
     }
 });

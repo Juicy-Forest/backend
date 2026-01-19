@@ -12,6 +12,7 @@ services:
   
   server:
     build: ./server
+    image: ghcr.io/${REPO_OWNER:-local}/juicy-forest-server:latest
     container_name: juicy-forest-server
     ports:
       - "3031:3031"
@@ -30,6 +31,7 @@ services:
 
   gateway:
     build: ./gateway
+    image: ghcr.io/${REPO_OWNER:-local}/juicy-forest-gateway:latest
     container_name: juicy-forest-gateway
     ports:
       - "3030:3030"
@@ -50,6 +52,7 @@ services:
       - /app/node_modules
   chat:
     build: ./chat
+    image: ghcr.io/${REPO_OWNER:-local}/juicy-forest-chat:latest
     container_name: juicy-forest-chat
     ports:
       - "3033:3033"
@@ -68,6 +71,7 @@ services:
 
   sensors:
     build: ./sensors
+    image: ghcr.io/${REPO_OWNER:-local}/juicy-forest-sensors:latest
     container_name: juicy-forest-sensors
     ports:
       - "3034:3034"
@@ -84,9 +88,6 @@ services:
     volumes:
       - ./sensors:/app
       - /app/node_modules
-    privileged: true
-    devices:
-      - "/dev/ttyACM0:/dev/ttyACM0"
 
 volumes:
   mongodb_data:

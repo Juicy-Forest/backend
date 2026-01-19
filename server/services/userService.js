@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const User = require("../models/User");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 const webConstants = require('../web-constants');
 
 
@@ -8,20 +8,20 @@ const tokenBlacklist = new Set();
 
 const validateToken = (token) => {
     try {
-        const data = jwt.verify(token, webConstants['JWT-SECRET'])
-        return data
+        const data = jwt.verify(token, webConstants['JWT-SECRET']);
+        return data;
     } catch (error) {
-        throw new Error('Invalid access token!')
+        throw new Error('Invalid access token!');
     }
-}
+};
 
 async function register(username, email, password) {
-    const existing = await User.findOne({ email }).collation({ locale: 'en', strength: 2 })
+    const existing = await User.findOne({ email }).collation({ locale: 'en', strength: 2 });
     if (existing) {
         throw new Error('Email is taken');
     }
 
-    const existingUsername = await User.findOne({ username }).collation({ locale: 'en', strength: 2 })
+    const existingUsername = await User.findOne({ username }).collation({ locale: 'en', strength: 2 });
     if (existingUsername) {
         throw new Error('Username is taken');
     }
@@ -31,14 +31,14 @@ async function register(username, email, password) {
         email,
         hashedPassword: await bcrypt.hash(password, 10),
         avatarColor: getRandomPastelColor(),
-    })
+    });
 
     return createToken(user);
 
 }
 
 async function login(email, password) {
-    const user = await User.findOne({ email }).collation({ locale: 'en', strength: 2 })
+    const user = await User.findOne({ email }).collation({ locale: 'en', strength: 2 });
     if (!user) {
         throw new Error('Incorrect email or password');
     }
@@ -107,21 +107,21 @@ async function deleteUser(id) {
 }
 
 function getRandomPastelColor() {
-  const pastelColors = [
-    '#FFB3BA', // light pink
-    '#FFDFBA', // light orange
-    '#FFFFBA', // light yellow
-    '#BAFFC9', // light green
-    '#BAE1FF', // light blue
-    '#D5BAFF', // light purple
-    '#FFC9DE', // soft pink
-    '#FFE7BA', // peach
-    '#BAFFD9', // mint
-    '#BFFFD9'  // soft turquoise
-  ];
+    const pastelColors = [
+        '#FFB3BA', // light pink
+        '#FFDFBA', // light orange
+        '#FFFFBA', // light yellow
+        '#BAFFC9', // light green
+        '#BAE1FF', // light blue
+        '#D5BAFF', // light purple
+        '#FFC9DE', // soft pink
+        '#FFE7BA', // peach
+        '#BAFFD9', // mint
+        '#BFFFD9'  // soft turquoise
+    ];
 
-  const randomIndex = Math.floor(Math.random() * pastelColors.length);
-  return pastelColors[randomIndex];
+    const randomIndex = Math.floor(Math.random() * pastelColors.length);
+    return pastelColors[randomIndex];
 }
 
 async function getUserByEmail(email) {
@@ -167,7 +167,7 @@ function createToken(user) {
         username: user.username,
         email: user.email,
         avatarColor: user.avatarColor,
-    }
+    };
 
     return {
         _id: user._id,
@@ -175,7 +175,7 @@ function createToken(user) {
         email: user.email,
         avatarColor: user.avatarColor,
         accessToken: jwt.sign(payload, webConstants['JWT-SECRET'])
-    }
+    };
 }
 
 module.exports = {
@@ -189,4 +189,4 @@ module.exports = {
     updateUserPassword,
     updateEmail,
     updateUsername
-}
+};

@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import cors from 'cors';
 import router from './routes.js';
 import { initDatabase } from './configs/database.js';
-import { startListeningOnSerialPort } from './services/sensorService.js'
+import { startListeningOnSerialPort } from './services/sensorService.js';
 import webConstants from './web-constants.js';
 
 const app = express();
@@ -11,14 +11,14 @@ const app = express();
 app.use(cors({ credentials: true, origin: 'http://localhost:5173', allowHeaders: ['Content-Type, X-Authorization'] }));
 app.use(express.json());
 app.use(router);
-initDatabase()
+initDatabase();
 
 const server = app.listen(webConstants.PORT, () => console.log(`Server listening on http://localhost:${webConstants.PORT}`));
 
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
-    console.log('user connected')
+    console.log('user connected');
 
     ws.on('close', () => {
         console.log('user disconnected');
@@ -32,6 +32,6 @@ const broadcastSensorData = (data) => {
             client.send(message);
         }
     });
-}
+};
 
 startListeningOnSerialPort(broadcastSensorData);

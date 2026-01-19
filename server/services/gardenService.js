@@ -94,21 +94,19 @@ async function updateGarden(id, data, userId) {
         throw new Error('Only owner can update the garden');
     }
 
-    if ("name" in data) {
+    if ('name' in data) {
         garden.name = data.name;
     }
 
-    if ("description" in data) {
+    if ('description' in data) {
         garden.description = data.description;
     }
 
     if (data.maxMembers) { // wont be 0 so works like this
         garden.maxMembers = data.maxMembers;
     }
-    console.log(data.grid)
-    if("grid" in data) {
-        console.log("Reaching here")
-        garden.grid = data.grid
+    if ('grid' in data) {
+        garden.grid = data.grid;
     }
 
     await garden.save();
