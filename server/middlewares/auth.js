@@ -1,9 +1,9 @@
-const { validateToken } = require("../services/userService");
+const { validateToken } = require('../services/userService');
 
 const authMiddleware = (req, res, next) => {
-    const token = req.headers["x-authorization"];
+    const token = req.headers['x-authorization'];
     
-    if(token){
+    if (token) {
         try {
             const user = validateToken(token);
             req.user = {
@@ -12,15 +12,15 @@ const authMiddleware = (req, res, next) => {
                 '_id': user._id,
                 'avatarColor': user.avatarColor,
                 token
-            }
+            };
         } catch (error) {
-            res.json(error)
+            res.json(error);
             console.log(error);
         }
     }
     next();
-}
+};
 
 module.exports = {
     authMiddleware,
-}
+};

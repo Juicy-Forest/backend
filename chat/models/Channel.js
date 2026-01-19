@@ -1,21 +1,21 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const channelSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
+    {
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        gardenId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            index: true,
+        },
     },
-    gardenId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      index: true,
-    },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
 channelSchema.index({ gardenId: 1, name: 1 }, { unique: true });

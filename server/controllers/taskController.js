@@ -7,7 +7,7 @@ tasksController.get('/', async (req, res) => {
         const tasks = await taskService.getTask(sectionId);
         res.status(200).json(tasks);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -17,7 +17,7 @@ tasksController.post('/', async (req, res) => {
         res.status(201).json(newItem);
     
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -27,7 +27,7 @@ tasksController.put('/:id', async (req, res) => {
         res.status(200).json(updatedItem);
 
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -37,7 +37,7 @@ tasksController.delete('/:id', async (req, res) => {
         res.status(204).end();
 
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -46,7 +46,7 @@ tasksController.put ('/:id/toggle', async(req, res) => {
         const updatedCheckBox = await taskService.toggleCheckBox(req.params.id);
         res.status(200).json(updatedCheckBox);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 
