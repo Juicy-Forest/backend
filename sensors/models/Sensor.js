@@ -15,5 +15,5 @@ const sensorSchema = new Schema({
     },
 });
 
-const Sensor = model("Sensor", sensorSchema);
+const Sensor = model('Sensor', sensorSchema);
 export default Sensor;

@@ -1,5 +1,5 @@
-import express from 'express'
-import { getSensorData } from '../services/sensorService.js'
+import express from 'express';
+import { getSensorData } from '../services/sensorService.js';
 const sensorController = express.Router();
 
 sensorController.get('/', async (req, res) => {
@@ -8,7 +8,7 @@ sensorController.get('/', async (req, res) => {
         res.status(200).send(sensorData);
     }
     catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 });
 

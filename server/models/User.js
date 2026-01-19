@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema({
     username: {
@@ -22,7 +22,7 @@ const userSchema = new Schema({
     }
 });
 
-userSchema.index({email: 1}, {
+userSchema.index({ email: 1 }, {
     collation: {
         locale: 'en',
         strength: 2

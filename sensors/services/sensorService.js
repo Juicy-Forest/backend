@@ -2,7 +2,7 @@ import Sensor from '../models/Sensor.js';
 import { SerialPort } from 'serialport';
 import { ReadlineParser } from '@serialport/parser-readline';
 
-const serialPortPath = process.env.SERIAL_PORT_PATH || "/dev/ttyACM0";
+const serialPortPath = process.env.SERIAL_PORT_PATH || '/dev/ttyACM0';
 
 export function startListeningOnSerialPort(websocketBroadcaster) {
     const port = new SerialPort({ path: serialPortPath, baudRate: 9600 });
@@ -13,7 +13,7 @@ export function startListeningOnSerialPort(websocketBroadcaster) {
         const parsedData = JSON.parse(data);
         await postSensorData(parsedData);
 
-        if(websocketBroadcaster) {
+        if (websocketBroadcaster) {
             websocketBroadcaster(parsedData);
         }
     });
@@ -24,7 +24,7 @@ export async function getSensorData() {
 }
 
 export async function postSensorData(data) {
-    return await Sensor.create(data)
+    return await Sensor.create(data);
 }
 
 

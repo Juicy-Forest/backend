@@ -2,149 +2,149 @@ import { WebSocket } from 'ws';
 import Message from '../models/Message.js';
 
 export function formatNewMessage(username, userId, message) {
-  return {
-    type: 'text',
-    payload: {
-      _id: message._id,
-      content: message.content,
-      channelId: message.channel._id,
-      channelName: message.channel.name,
-      author: {
-        _id: userId,
-        username: username,
-        avatarColor: message.author.avatarColor,
-      },
-      timestamp: message.createdAt 
-    }
-  };
+    return {
+        type: 'text',
+        payload: {
+            _id: message._id,
+            content: message.content,
+            channelId: message.channel._id,
+            channelName: message.channel.name,
+            author: {
+                _id: userId,
+                username: username,
+                avatarColor: message.author.avatarColor,
+            },
+            timestamp: message.createdAt 
+        }
+    };
 }
 
 export function formatMessage(message) {
-  return {
-    type: 'text',
-    payload: {
-      _id: message._id,
-      content: message.content,
-      channelId: message.channel._id,
-      channelName: message.channel.name,
-      author: {
-        _id: message.author._id,
-        username: message.author.username,
-        avatarColor: message.author.avatarColor,
-      },
-      timestamp: message.createdAt 
-    }
-  };
+    return {
+        type: 'text',
+        payload: {
+            _id: message._id,
+            content: message.content,
+            channelId: message.channel._id,
+            channelName: message.channel.name,
+            author: {
+                _id: message.author._id,
+                username: message.author.username,
+                avatarColor: message.author.avatarColor,
+            },
+            timestamp: message.createdAt 
+        }
+    };
 }
 
 export function broadcastMessage(wss, sender, message) {
-  // Create the standard message object
-  const messageObj = formatNewMessage(sender.username, sender._id, message);
-  const jsonMessage = JSON.stringify(messageObj);
+    // Create the standard message object
+    const messageObj = formatNewMessage(sender.username, sender._id, message);
+    const jsonMessage = JSON.stringify(messageObj);
 
-  // Broadcast to all connected clients
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(jsonMessage);
-    }
-  });
+    // Broadcast to all connected clients
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(jsonMessage);
+        }
+    });
 }
 
 export function broadcastActivity(wss, ws, channelId, avatarColor) {
-  wss.clients.forEach((client) => {
-    if (client !== ws && client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ type: 'activity', channelId: channelId, payload: {username: ws.user.username, avatarColor: avatarColor} }))
-    }
-  });
+    wss.clients.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ type: 'activity', channelId: channelId, payload: { username: ws.user.username, avatarColor: avatarColor } }));
+        }
+    });
 }
 
 export function broadcastEditedMessage(wss, message) {
-  const editPayload = {
-    type: 'editMessage',
-    payload: {
-      _id: message._id,
-      content: message.content,
-      timestamp: message.updatedAt,
-    }
-  };
+    const editPayload = {
+        type: 'editMessage',
+        payload: {
+            _id: message._id,
+            content: message.content,
+            timestamp: message.updatedAt,
+        }
+    };
   
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(editPayload));
-    }
-  });
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(editPayload));
+        }
+    });
 }
 
 export function broadcastDeletedMessage(wss, message) {
-  const editPayload = {
-    type: 'deleteMessage',
-    payload: {
-      _id: message._id,
-    }
-  };
+    const editPayload = {
+        type: 'deleteMessage',
+        payload: {
+            _id: message._id,
+        }
+    };
   
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(editPayload));
-    }
-  });
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(editPayload));
+        }
+    });
 }
 
 export async function saveMessage(senderId, senderUsername, message) {
-  return await Message.create({
-    author: {
-      _id: senderId,
-      username: senderUsername,
-      avatarColor: message.avatarColor,
-    },
-    content: message.content,
-    channel: message.channelId,
-    gardenId: message.gardenId
-  }).then(doc => doc.populate('channel'));
+    return await Message.create({
+        author: {
+            _id: senderId,
+            username: senderUsername,
+            avatarColor: message.avatarColor,
+        },
+        content: message.content,
+        channel: message.channelId,
+        gardenId: message.gardenId
+    }).then(doc => doc.populate('channel'));
 }
 
-export async function editMessage(messageId, newContent, userId){
-  const message = await Message.findById(messageId); 
+export async function editMessage(messageId, newContent, userId) {
+    const message = await Message.findById(messageId); 
 
-  if(!message){
-    throw new Error('Message not found');
-  };
+    if (!message) {
+        throw new Error('Message not found');
+    };
 
-  if(message.author._id.toString() !== userId){
-    throw new Error('Unauthorized: You can only edit your own messages');
-  };
+    if (message.author._id.toString() !== userId) {
+        throw new Error('Unauthorized: You can only edit your own messages');
+    };
 
-  message.content = newContent;
-  await message.save();
+    message.content = newContent;
+    await message.save();
 
-  return message;
+    return message;
 };
 
-export async function deleteMessage(messageId, userId){
-  const message = await Message.findById(messageId); 
+export async function deleteMessage(messageId, userId) {
+    const message = await Message.findById(messageId); 
 
-  if(!message){
-    throw new Error('Message not found');
-  };
+    if (!message) {
+        throw new Error('Message not found');
+    };
 
-  if(message.author._id.toString() !== userId){
-    throw new Error('Unauthorized: You can only delete your own messages');
-  };
+    if (message.author._id.toString() !== userId) {
+        throw new Error('Unauthorized: You can only delete your own messages');
+    };
 
-  await message.deleteOne();
+    await message.deleteOne();
 
-  return message;
+    return message;
 }
 
 export async function getMessagesByChannelId(channelId) {
-  return await Message.find({ channelId: channelId });
+    return await Message.find({ channelId: channelId });
 }
 
 export async function getFormattedMessagesByGardenId(gardenId) {
-  const messages = await getMessagesByGardenId(gardenId);
-  return messages.map(message => formatMessage(message));
+    const messages = await getMessagesByGardenId(gardenId);
+    return messages.map(message => formatMessage(message));
 }
 
 export async function getMessagesByGardenId(gardenId) {
-  return await Message.find({gardenId: gardenId}).sort({createdAt: 1}).populate('channel');
+    return await Message.find({ gardenId: gardenId }).sort({ createdAt: 1 }).populate('channel');
 }
