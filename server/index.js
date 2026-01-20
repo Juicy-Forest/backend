@@ -6,7 +6,7 @@ const router = require('./routes');
 const initDatabase = require('./configs/database');
 const webConstants = require('./web-constants');
 
-app.use(express.json());
+app.use(express.json())
 app.use(authMiddleware);
 app.use(router);
 initDatabase()
